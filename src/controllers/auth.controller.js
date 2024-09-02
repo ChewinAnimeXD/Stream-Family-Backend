@@ -105,7 +105,6 @@ export const login = async (req, res) => {
       email: userFound.email,
       role: userFound.role,
       balance: userFound.balance,
-      token: userFound.token,
     });
 
   } catch (error) {
