@@ -1,35 +1,24 @@
 import express from 'express';
 import jwt from 'jsonwebtoken';
 import { TOKEN_SECRET } from '../config.js';
-import { tokensito } from '../controllers/auth.controller.js'; // Asegúrate de que esto esté en uso o elimínalo
-import cookieParser from "cookie-parser"; // No es necesario si no usas cookies en este middleware
+import { tokensito } from '../controllers/auth.controller.js';
+import cookieParser from "cookie-parser";
 
-// Middleware de autenticación
+//const app = express();
+//app.use(cookieParser());
+
 export const authRequired = async (req, res, next) => {
-  try {
-    const authHeader = req.headers.authorization;
 
-    if (!authHeader) {
-      return res.status(401).json({ message: "No token, autorización denegada", request: req });
-    }
+    //const token = req.headers.authorization;
+ 
+    const token = req.headers.autentification
+    console.log("Este es el token de authrequired",token);
 
-    // Asegura que el token tenga el formato 'Bearer <token>'
-    const token = authHeader.split(' ')[1];
+    if (!token) return res.status(401).json({ Message: "No token, autorización denegada ", request:req});
 
-    if (!token) {
-      return res.status(401).json({ message: "Formato de token incorrecto, autorización denegada" });
-    }
-
-    // Verificación del token JWT
     jwt.verify(token, TOKEN_SECRET, (err, user) => {
-      if (err) return res.status(403).json({ message: "Token inválido" });
-
-      req.user = user; // Añade la información del usuario a la solicitud
-      next(); // Llama a la siguiente función de middleware
+        if(err) return res.status(403).json({ message: "Token invalido"});
+        req.user = user;
+        next();
     });
-
-  } catch (error) {
-    console.error("Error en la verificación del token:", error);
-    return res.status(500).json({ message: "Error interno del servidor" });
-  }
 };
