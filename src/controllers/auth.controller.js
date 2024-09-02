@@ -85,10 +85,10 @@ export const login = async (req, res) => {
     await User.findByIdAndUpdate(userFound._id, { tokensito });
 
     
-    res.cookie('token', token, {
-    httpOnly: true, // Accesible solo desde el servidor
-      secure: true, // Solo en conexiones seguras (https)
-      });
+ //   res.cookie('token', token, {
+   // httpOnly: true, // Accesible solo desde el servidor
+     // secure: true, // Solo en conexiones seguras (https)
+     // });
     
     const tok = req.cookies.token;
     console.log("El token",tok);
