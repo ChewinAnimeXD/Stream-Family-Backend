@@ -1,8 +1,6 @@
-import express from 'express';
+
 import jwt from 'jsonwebtoken';
 import { TOKEN_SECRET } from '../config.js';
-import { tokensito } from '../controllers/auth.controller.js';
-import cookieParser from "cookie-parser";
 
 //const app = express();
 //app.use(cookieParser());
