@@ -6,22 +6,21 @@ import { TOKEN_SECRET } from "../config.js";
 
 export const register = async (req, res) => {
   const { username, email, role, password, balance } = req.body;
-
+  
   try {
     const userFound = await User.findOne({ email });
     if (userFound) return res.status(400).json(["El correo ya está en uso"]);
-
+    
     const passwordHash = await bcrypt.hash(password, 10);
     const newUser = new User({
       username,
       email,
       role,
-      password: passwordHash,
+      password: passwordHash, 
       balance,
     });
-
     const userSaved = await newUser.save();
-
+    
     res.json({
       Message: "Usuario creado satisfactoriamente",
       id: userSaved._id,
@@ -83,7 +82,7 @@ export const login = async (req, res) => {
     }
 
     const token = await createAccesToken({ id: userFound._id });
-
+    
     res.cookie("token", token, {
       expires: new Date(Date.now() + 86400 * 1000), // 1 día de expiración
       httpOnly: true,
