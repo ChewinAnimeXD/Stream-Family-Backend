@@ -4,7 +4,7 @@ import { createAccesToken } from "../libs/jwt.js";
 import jwt from "jsonwebtoken";
 import { TOKEN_SECRET } from "../config.js";
 
-export let tokensito = "";
+
 export const register = async (req, res) => {
   const { username, email, role, password, balance} = req.body;
   
@@ -20,9 +20,6 @@ export const register = async (req, res) => {
       balance,
     });
     const userSaved = await newUser.save();
-    
-    //const token = await createAccesToken({ id: userSaved._id });
-    //res.cookie("token", token);
     
     res.json({
       Message: "Usuario creado satisfactoriamente",
@@ -93,10 +90,6 @@ export const login = async (req, res) => {
       secure: true, // Solo en conexiones seguras (https)
       });
     
-    const tok = req.cookies.token;
-    console.log("El token",tok);
-
-    tokensito=tok;
 
     res.json({
       Message: "Usuario encontrado ",
@@ -105,6 +98,7 @@ export const login = async (req, res) => {
       email: userFound.email,
       role: userFound.role,
       balance: userFound.balance,
+      token: userFound.token,
     });
 
   } catch (error) {
@@ -112,39 +106,6 @@ export const login = async (req, res) => {
   }
 };
 
-/*export const login = async (req, res) => {
-  const { email, password } = req.body;
-
-  try {
-    const userFound = await User.findOne({ email });
-    if (!userFound)
-      return res.status(400).json({
-        message: ["El correo no existe"],
-      });
-
-    const isMatch = await bcrypt.compare(password, userFound.password);
-
-    if (!isMatch) {
-      return res.status(400).json({
-        message: ["La contraseña es incorrecta"],
-      });
-    }
-
-    const token = await createAccesToken({ id: userFound._id });
-
-    res.cookie("token", token);
-    res.json({
-      Message: "Usuario encontrado ",
-      id: userFound._id,
-      username: userFound.username,
-      email: userFound.email,
-      role: userFound.role,
-      balance: userFound.balance,
-    });
-  } catch (error) {
-    res.status(500).json({ Message: error.Message });
-  }
-}; */
 
 export const logout = (req, res) => {
   res.cookie("token", "", {
@@ -189,27 +150,6 @@ export const verifyToken = async (req, res) => {
   });
 };
 
-/**
-export const verifyToken = async (req, res) => {
-  const { token } = req.cookies;
-
-  if (!token) return res.status(401).json({ message: "No autorizado" });
-
-  jwt.verify(token, TOKEN_SECRET, async (err, user) => {
-    if (err) return res.status(401).json({ message: "No autorizado" });
-
-    const userFound = await User.findById(user.id);
-    if (!userFound) return res.status(401).json({ message: "No autorizado" });
-
-    return res.json({
-      id: userFound._id,
-      username: userFound.username,
-      email: userFound.email,
-      role: userFound.role,
-      balance: userFound.balance,
-    });
-  });
-};  */
 
 export const updateUser = async (req, res) => {
   try {
