@@ -24,6 +24,9 @@ const userSchema = new mongoose.Schema({
     balance: {
         type: Number,
         required: false
+    },
+    token: {
+        type: String
     }
 }, {
     timestamps: true
