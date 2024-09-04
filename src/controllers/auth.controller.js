@@ -49,7 +49,7 @@ export const getUser = async (req, res) => {
     if (!user) return res.status(404).json({ Message: "Usuario no encontrado" });
     res.json(user);
   } catch (error) {
-    return res.status(404).json({ message: "Usuario no encontrado" });
+    return res.status(500).json({ message: error.message });
   }
 };
 
@@ -59,7 +59,7 @@ export const deleteUser = async (req, res) => {
     if (!user) return res.status(404).json({ Message: "Usuario no encontrado" });
     return res.sendStatus(204);
   } catch (error) {
-    return res.status(404).json({ message: "Usuario no encontrado" });
+    return res.status(500).json({ message: error.message });
   }
 };
 
@@ -86,8 +86,8 @@ export const login = async (req, res) => {
     res.cookie("token", token, {
       expires: new Date(Date.now() + 86400 * 1000), // 1 día de expiración
       httpOnly: true,
-      secure: true, // Solo para HTTPS
-      sameSite: "None" // Para enviar cookies entre diferentes dominios
+      secure: process.env.NODE_ENV === "production", // Usar solo HTTPS en producción
+      sameSite: "None", // Para enviar cookies entre diferentes dominios
     });
 
     res.json({
@@ -108,23 +108,28 @@ export const login = async (req, res) => {
 export const logout = (req, res) => {
   res.cookie("token", "", {
     expires: new Date(0),
+    httpOnly: true,
+    secure: process.env.NODE_ENV === "production",
+    sameSite: "None",
   });
   return res.sendStatus(200);
 };
 
 export const profile = async (req, res) => {
-  const userFound = await User.findById(req.user.id);
+  try {
+    const userFound = await User.findById(req.user.id);
+    if (!userFound) return res.status(400).json({ Message: "Usuario no encontrado" });
 
-  if (!userFound)
-    return res.status(400).json({ Message: "Usuario no encontrado" });
-
-  return res.json({
-    id: userFound._id,
-    username: userFound.username,
-    email: userFound.email,
-    role: userFound.role,
-    balance: userFound.balance,
-  });
+    return res.json({
+      id: userFound._id,
+      username: userFound.username,
+      email: userFound.email,
+      role: userFound.role,
+      balance: userFound.balance,
+    });
+  } catch (error) {
+    return res.status(500).json({ message: error.message });
+  }
 };
 
 export const verifyToken = async (req, res) => {
@@ -133,7 +138,7 @@ export const verifyToken = async (req, res) => {
   if (!token) return res.status(401).json({ message: "No autorizado" });
 
   jwt.verify(token, TOKEN_SECRET, async (err, user) => {
-    if (err) return res.status(401).json({ message: "No autorizado" });
+    if (err) return res.status(403).json({ message: "Token inválido" });
 
     const userFound = await User.findById(user.id);
     if (!userFound) return res.status(401).json({ message: "No autorizado" });
@@ -163,6 +168,7 @@ export const updateUser = async (req, res) => {
     }
     res.json(user);
   } catch (error) {
-    return res.status(404).json({ message: "Usuario no encontrado" });
+    return res.status(500).json({ message: error.message });
   }
 };
+
