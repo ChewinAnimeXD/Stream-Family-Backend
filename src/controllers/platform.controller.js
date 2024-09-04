@@ -2,7 +2,7 @@ import Platform from "../models/platform.model.js";
 
 export const registerPlatform = async (req, res) => {
   const { name, sell, createDate, price, type, email, password, screen, pin } = req.body;
-  console.log("Entro a controller")
+  //console.log("Entro a controller")
 
   try {
     const platform = new Platform({

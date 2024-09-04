@@ -4,7 +4,7 @@ import { TOKEN_SECRET } from '../config.js';
 export const authRequired = async (req, res, next) => {
     const token = req.cookies.token; // Obtener el token desde las cookies
 
-    console.log("Este es el token de authRequired:", token);
+    //console.log("Este es el token de authRequired:", token);
 
     if (!token) {
         return res.status(401).json({ message: "No token, autorización denegada", request: req });

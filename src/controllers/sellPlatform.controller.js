@@ -2,7 +2,7 @@ import SellPlatform from "../models/sellPlatform.model.js";
 
 export const registerSellPlatform = async (req, res) => {
   const { name, sell, seller, createDate, buyDate, price, type, email, password, screen, pin } = req.body;
-  console.log("Entro a controller")
+  //console.log("Entro a controller")
 
   try {
     const sellPlatform = new SellPlatform({
